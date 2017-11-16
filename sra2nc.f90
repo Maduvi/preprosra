@@ -25,7 +25,6 @@ PROGRAM sra2nc
   CHARACTER(LEN=100) :: ncfile  ! Output nc file
   INTEGER(KIND=4)    :: kcode   ! ECHAM code
   INTEGER(KIND=4)    :: unit    ! Namelist unit
-  INTEGER(KIND=4)    :: i       ! Counter
   INTEGER(KIND=4)    :: nmon    ! Number of months in file
   INTEGER(KIND=4)    :: nlon    ! Number of longitudes
   INTEGER(KIND=4)    :: nlat    ! Number of latitudes
