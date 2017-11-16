@@ -31,8 +31,8 @@ PROGRAM sra2nc
   INTEGER(KIND=4)    :: nlat    ! Number of latitudes
   INTEGER(KIND=4)    :: hcols   ! Number of cols in hdr
   INTEGER(KIND=4)    :: dcols   ! Number of cols in data matrix
-  INTEGER(KIND=4)    :: operr   ! Error variable
-  INTEGER(KIND=4)    :: rperr   ! Error variable
+  INTEGER(KIND=4)    :: operr   ! Open error variable
+  INTEGER(KIND=4)    :: rderr   ! Read error variable
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:,:)   :: ihead ! headrs arr
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:)     :: vtime ! times arr
   REAL(KIND=8),    ALLOCATABLE, DIMENSION(:,:,:) :: data  ! data arr
@@ -44,8 +44,10 @@ PROGRAM sra2nc
 
   ! Read input file with variable definitions
   inpnml  = "./sra2nc_namelist"
-  OPEN (unit=1, file=inpnml)
-  READ (1,nml=INPUT_INFO)
+  OPEN (unit=1, file=inpnml,iostat=operr)
+  IF(operr>0) STOP "sra2nc: IOError. Could not open namelist file."  
+  READ (1,nml=INPUT_INFO,iostat=rderr)
+  IF(rderr>0) STOP "sra2nc: IOError. Could not read namelist file."
   
   ! Allocate memory
   ALLOCATE(lat(nlat))
