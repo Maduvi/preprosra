@@ -5,7 +5,8 @@ MODULE CODEmat
   !  shortnames, longnames and units for common PlaSim variables.
   !  
   !  CONTAINS:
-  !           kcoder -> chooses lname,sname and units from kcode
+  !           kcoder -> chooses lname,sname,units from kcode
+  !           genhdr -> creates headers for SRA files
   !           latlons -> gives lat and lot arrays got elsewhere
   !
   !  Created: Mateo Duque Villegas
@@ -17,6 +18,8 @@ MODULE CODEmat
 CONTAINS
 
   SUBROUTINE kcoder(kcode,lname,sname,units)
+
+    IMPLICIT NONE
 
     ! Global namespace
     INTEGER(KIND=4),  INTENT(IN)  :: kcode
@@ -397,6 +400,97 @@ CONTAINS
     RETURN  
   END SUBROUTINE kcoder
 
+  SUBROUTINE genheadr(kcode,hcols,nmon,nlon,nlat,ihead)
+
+    IMPLICIT NONE
+
+    ! Global namespace
+    INTEGER(KIND=4), INTENT(IN)  :: kcode
+    INTEGER(KIND=4), INTENT(IN)  :: hcols
+    INTEGER(KIND=4), INTENT(IN)  :: nmon
+    INTEGER(KIND=4), INTENT(IN)  :: nlat
+    INTEGER(KIND=4), INTENT(IN)  :: nlon
+    INTEGER(KIND=4), DIMENSION(hcols,nmon), INTENT(OUT) :: ihead
+
+    ! Local namespace
+    INTEGER(KIND=4) :: i
+    INTEGER(KIND=4) :: ilevel = 0
+    INTEGER(KIND=4) :: idate
+    INTEGER(KIND=4) :: itime
+    INTEGER(KIND=4) :: idispo1 = 0
+    INTEGER(KIND=4) :: idispo2 = 0
+
+    IF (kcode == 129) THEN
+       idate = 20070101
+       itime = 0
+    ELSE IF (kcode == 169) THEN
+       idate = 20090000
+       itime = -1
+    ELSE IF (kcode == 172) THEN
+       idate = 20090101
+       itime = 0
+    ELSE IF (kcode == 173) THEN
+       idate = 990100
+       itime = -1
+    ELSE IF (kcode == 174) THEN
+       idate = 20090001
+       itime = 0
+    ELSE IF (kcode == 199) THEN
+       idate = 20090001
+       itime = 0
+    ELSE IF (kcode == 200) THEN
+       idate = 20090001
+       itime = 0
+    ELSE IF (kcode == 210) THEN
+       idate = 20090000
+       itime = -1
+    ELSE IF (kcode == 212) THEN
+       idate = 990100
+       itime = -1
+    ELSE IF (kcode == 229) THEN
+       idate = 990100
+       itime = -1
+    ELSE IF (kcode == 232) THEN
+       idate = 990100
+       itime = -1
+    ELSE IF (kcode == 1730) THEN
+       idate = 0
+       itime = 0
+    ELSE IF (kcode == 1731) THEN
+       idate = 990100
+       itime = -1
+    ELSE IF (kcode == 1740) THEN
+       idate = 20090101
+       itime = 0
+    ELSE IF (kcode == 1741) THEN
+       idate = 20090101
+       itime = 0
+    END IF
+    
+    ! Fill header array
+    DO i=0,nmon
+       ihead(1,i) = kcode
+       ihead(2,i) = ilevel
+       ! These dates need a bit of pampering
+       IF (i == 1) THEN
+          ihead(3,i) = idate
+       ELSE   
+          IF (itime == 0) THEN
+             ihead(3,i) = idate + ((i-1)*100) ! Add 100 when i=2
+          ELSE IF (itime == -1) THEN
+             ihead(3,i) = idate + ((i-1)*100) + 1 ! Add 100 when i=2 plus 1
+          END IF
+       END IF
+       ihead(4,i) = itime
+       ihead(5,i) = nlon
+       ihead(6,i) = nlat
+       ihead(7,i) = idispo1
+       ihead(8,i) = idispo2
+    END DO
+   
+    RETURN
+  END SUBROUTINE genheadr
+  
   SUBROUTINE latlons(nlat,nlon,lat,lon)
     
     INTEGER(KIND=4), INTENT(IN)  :: nlat

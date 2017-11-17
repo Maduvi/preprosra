@@ -6,12 +6,15 @@ MODULE IOmod
   !
   !  USES:
   !            netcdf -> netCDF-Fortran lib
-  !            CODEmat -> uses kcodes to choose attributes
+  !            CODEmat -> chooses lname,sname and units from kcode
   !
   !  CONTAINS: 
   !            sraReader -> reads .SRA files
   !            check     -> checks for errors in netCDF lib funcs
-  !            ncgen     -> creates netCDF files
+  !            ncgen     -> creates netCDF files from SRA files
+  !            getdims   -> reads netCDF and gets dims
+  !            ncread    -> reads netCDF files
+  !            sragen    -> creates SRA files from netCDF files
   !
   !  Created: Mateo Duque Villegas
   !  Last updated: 17-Nov-2017
@@ -86,6 +89,91 @@ CONTAINS
     RETURN
   END SUBROUTINE check
 
+  SUBROUTINE getdims(ncfile,nmon,nlon,nlat)
+
+    USE netcdf
+
+    IMPLICIT NONE
+
+    ! Global namespace
+    CHARACTER(LEN=*), INTENT(IN)  :: ncfile
+    INTEGER(KIND=4),  INTENT(OUT) :: nmon
+    INTEGER(KIND=4),  INTENT(OUT) :: nlon
+    INTEGER(KIND=4),  INTENT(OUT) :: nlat
+
+    ! Local namespace
+    CHARACTER(LEN=50) :: tname
+    CHARACTER(LEN=50) :: xname
+    CHARACTER(LEN=50) :: yname
+    INTEGER(KIND=4)   :: ncid
+
+    ! Open netCDF and read
+    CALL check(nf90_open(ncfile,nf90_nowrite,ncid))
+
+    ! Inquire for dimensions
+    CALL check(nf90_inquire_dimension(ncid,1,tname,nmon))
+    CALL check(nf90_inquire_dimension(ncid,2,xname,nlon))
+    CALL check(nf90_inquire_dimension(ncid,3,yname,nlat))
+
+    ! Close netCDF file
+    CALL check(nf90_close(ncid))
+
+    RETURN
+  END SUBROUTINE getdims
+  
+  SUBROUTINE ncread(ncfile,nmon,nlon,nlat,vtime,lon,lat,data)
+
+    USE netcdf
+
+    IMPLICIT NONE
+
+    ! Global namespace
+    CHARACTER(LEN=*), INTENT(IN) :: ncfile
+    INTEGER(KIND=4),  INTENT(IN) :: nmon
+    INTEGER(KIND=4),  INTENT(IN) :: nlon
+    INTEGER(KIND=4),  INTENT(IN) :: nlat
+    INTEGER(KIND=4), DIMENSION(nmon),           INTENT(OUT) :: vtime
+    REAL(KIND=8),    DIMENSION(nlon),           INTENT(OUT) :: lon
+    REAL(KIND=8),    DIMENSION(nlat),           INTENT(OUT) :: lat
+    REAL(KIND=8),    DIMENSION(nlon,nlat,nmon), INTENT(OUT) :: data
+
+    ! Local namespace
+    CHARACTER(LEN=50) :: tname
+    CHARACTER(LEN=50) :: xname
+    CHARACTER(LEN=50) :: yname
+    CHARACTER(LEN=50) :: vname
+    INTEGER(KIND=4)   :: ncid
+    INTEGER(KIND=4)   :: type
+    INTEGER(KIND=4)   :: ndims
+    INTEGER(KIND=4)   :: varid
+    INTEGER(KIND=4), DIMENSION(3) :: dimids
+
+    ! Open netcdf
+    CALL check(nf90_open(ncfile,nf90_nowrite,ncid))
+
+    ! Get values for time coordinate
+    CALL check(nf90_inquire_variable(ncid,1,vname,type,ndims,dimids))
+    CALL check(nf90_inq_varid(ncid,vname,varid))
+    CALL check(nf90_get_var(ncid,varid,vtime))
+
+    ! Get values for x coordinate
+    CALL check(nf90_inquire_variable(ncid,2,vname,type,ndims,dimids))
+    CALL check(nf90_inq_varid(ncid,vname,varid))
+    CALL check(nf90_get_var(ncid,varid,lon))
+
+    ! Get values for y coordinate
+    CALL check(nf90_inquire_variable(ncid,3,vname,type,ndims,dimids))
+    CALL check(nf90_inq_varid(ncid,vname,varid))
+    CALL check(nf90_get_var(ncid,varid,lat))
+    
+    ! Get values for data
+    CALL check(nf90_inquire_variable(ncid,4,vname,type,ndims,dimids))
+    CALL check(nf90_inq_varid(ncid,vname,varid))
+    CALL check(nf90_get_var(ncid,varid,data))
+    
+    RETURN
+  END SUBROUTINE ncread
+  
   SUBROUTINE ncgen(ncfile,kcode,vtime,lon,lat,data,nmon,nlon,nlat)
 
     USE CODEmat
@@ -191,5 +279,49 @@ CONTAINS
 
     RETURN    
   END SUBROUTINE ncgen
+
+  SUBROUTINE sragen(srafile,kcode,hcols,dcols,nmon,nlon,nlat,ihead&
+       &,data)
+
+    IMPLICIT NONE
+
+    ! Global namespace
+    CHARACTER(LEN=*), INTENT(IN) :: srafile
+    INTEGER(KIND=4),  INTENT(IN) :: kcode
+    INTEGER(KIND=4),  INTENT(IN) :: hcols
+    INTEGER(KIND=4),  INTENT(IN) :: dcols
+    INTEGER(KIND=4),  INTENT(IN) :: nmon
+    INTEGER(KIND=4),  INTENT(IN) :: nlon
+    INTEGER(KIND=4),  INTENT(IN) :: nlat
+    INTEGER(KIND=4), DIMENSION(hcols,nmon),     INTENT(IN) :: ihead
+    REAL(KIND=8),    DIMENSION(nlon,nlat,nmon), INTENT(IN) :: data
+
+    ! Local namespace
+    INTEGER(KIND=4) :: i
+    INTEGER(KIND=4) :: operr
+    INTEGER(KIND=4) :: unit = 11
+
+    ! Open .SRA file
+    OPEN(unit,file=srafile,form='FORMATTED',action='write',iostat&
+         &=operr)
+    IF(operr>0) STOP "sragen: IOError. Could not open the file."
+
+    ! Write for every month
+    DO i = 1,nmon
+       WRITE(unit,'(8I10)') ihead(:,i)
+       IF (dcols == 4) THEN
+          WRITE(unit,'(4E16.6)') data(:,:,i)
+       ELSE IF (dcols == 8) THEN
+          ! LSmask is the only with 6 decimal places
+          IF (kcode == 172) THEN
+             WRITE(unit,'(8F10.6)') data(:,:,i)
+          ELSE
+             WRITE(unit,'(8F10.3)') data(:,:,i)
+          END IF
+       END IF
+    END DO
+
+    RETURN
+  END SUBROUTINE sragen
   
 END MODULE IOmod

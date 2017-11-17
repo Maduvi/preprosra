@@ -71,7 +71,7 @@ PROGRAM sra2nc
   ! Get lats and lons (fixed, not computed)
   CALL latlons(nlat,nlon,lat,lon)
   
-  ! .SRA file name plus .CDL extension.
+  ! .SRA file name plus .NC extension.
   ncfile = "./"//TRIM(ADJUSTL(sra))//".nc"
 
   ! Create ncfile using ncgen from IOmod

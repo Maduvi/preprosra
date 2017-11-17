@@ -5,21 +5,22 @@ LDFLAGS  = -L/usr/lib64 -lnetcdff
 FFLAGS  = -g
 COMPILE  = $(FC) $(FFLAGS) $(CPPFLAGS) -c
 LINK     = $(FC) $(LDFLAGS) -o
-OBJECT  = codemat.o IOmodul.o sra2nc.o
+OBJECT1  = codemat.o IOmodul.o sra2nc.o
+OBJECT2  = codemat.o IOmodul.o nc2sra.o
 
-all: cdl
+all: nc2sra sra2nc
 
-cdl: sra2nc
-	./sra2nc.exe
+sra2nc: $(OBJECT1)
+	$(LINK) sra2nc.exe $(OBJECT1)
 
-sra2nc: $(OBJECT)
-	$(LINK) sra2nc.exe $(OBJECT)
+nc2sra: $(OBJECT2)
+	$(LINK) nc2sra.exe $(OBJECT2)
 
 %.o: %.f90
 	$(COMPILE) $<
 
 clean-all: clean
-	rm -f sra2nc.exe *.cdl
+	rm -f *.exe *.cdl
 
 clean:
 	rm -f *.o *.mod 
