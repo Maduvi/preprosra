@@ -20,7 +20,7 @@ nc2sra: $(OBJECT2)
 	$(COMPILE) $<
 
 clean-all: clean
-	rm -f *.exe *.cdl
+	rm -f *.exe
 
 clean:
 	rm -f *.o *.mod 
