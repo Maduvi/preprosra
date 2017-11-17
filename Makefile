@@ -11,12 +11,12 @@ OBJECT2  = codemat.o IOmodul.o nc2sra.o
 all: nc2sra sra2nc
 
 sra2nc: $(OBJECT1)
-	$(LINK) sra2nc.exe $(OBJECT1)
+	$(LINK) bin/sra2nc.exe $(OBJECT1)
 
 nc2sra: $(OBJECT2)
-	$(LINK) nc2sra.exe $(OBJECT2)
+	$(LINK) bin/nc2sra.exe $(OBJECT2)
 
-%.o: %.f90
+%.o: src/%.f90
 	$(COMPILE) $<
 
 clean-all: clean
