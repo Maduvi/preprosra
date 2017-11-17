@@ -5,394 +5,397 @@ MODULE CODEmat
   !  shortnames, longnames and units for common PlaSim variables.
   !  
   !  CONTAINS:
-  !           kcodematrix -> creates big matrix with codes as indices
+  !           kcoder -> chooses lname,sname and units from kcode
   !           latlons -> gives lat and lot arrays got elsewhere
   !
   !  Created: Mateo Duque Villegas
-  !  Last updated: 16-Nov-2017
+  !  Last updated: 17-Nov-2017
   !
   !-------------------------------------------------------------------
   IMPLICIT NONE
 
 CONTAINS
 
-  SUBROUTINE kcodematrix(kcodemat)
- 
-    ! Big array with kcodes for indexes
-    ! Dimension is so that we can use kcode as indexes
-    CHARACTER(LEN=*), DIMENSION(100:1800,3), INTENT(out) :: KCODEMAT
-
-    KCODEMAT(110,1) = "Mixed Layer Depth"
-    KCODEMAT(110,2) = "mld"
-    KCODEMAT(110,3) = "m"
-
-    KCODEMAT(129,1) = "Surface Geopotential Orography"
-    KCODEMAT(129,2) = "sg"
-    KCODEMAT(129,3) = "m2/s2"
-
-    KCODEMAT(130,1) = "Temperature"
-    KCODEMAT(130,2) = "ta"
-    KCODEMAT(130,3) = "K"
-
-    KCODEMAT(131,1) = "Zonal Wind"
-    KCODEMAT(131,2) = "ua"
-    KCODEMAT(131,3) = "m/s"
-
-    KCODEMAT(132,1) = "Meridional Wind"
-    KCODEMAT(132,2) = "va"
-    KCODEMAT(132,3) = "m/s"
-
-    KCODEMAT(133,1) = "Specific Humidity"
-    KCODEMAT(133,2) = "hus"
-    KCODEMAT(133,3) = "kg/kg"
-
-    KCODEMAT(134,1) = "Surface Pressure"
-    KCODEMAT(134,2) = "ps"
-    KCODEMAT(134,3) = "hPa"
-
-    KCODEMAT(135,1) = "Vertical Velocity"
-    KCODEMAT(135,2) = "wap"
-    KCODEMAT(135,3) = "Pa/s"
-
-    KCODEMAT(137,1) = "Vertical Wind"
-    KCODEMAT(137,2) = "wa"
-    KCODEMAT(137,3) = "m/s"
-
-    KCODEMAT(138,1) = "Vorticity"
-    KCODEMAT(138,2) = "zeta"
-    KCODEMAT(138,3) = "1/s"
-
-    KCODEMAT(139,1) = "Surface Temperature"
-    KCODEMAT(139,2) = "ts"
-    KCODEMAT(139,3) = "K"
-
-    KCODEMAT(140,1) = "Soil Wetness"
-    KCODEMAT(140,2) = "mrso"
-    KCODEMAT(140,3) = "m"
-
-    KCODEMAT(141,1) = "Snow Depth"
-    KCODEMAT(141,2) = "snd"
-    KCODEMAT(141,3) = "m"
-
-    KCODEMAT(142,1) = "Large Scale Precipitation"
-    KCODEMAT(142,2) = "prl"
-    KCODEMAT(142,3) = "m/s"
-
-    KCODEMAT(143,1) = "Convective Precipitation"
-    KCODEMAT(143,2) = "prc"
-    KCODEMAT(143,3) = "m/s"
-
-    KCODEMAT(144,1) = "Snow Fall"
-    KCODEMAT(144,2) = "prsn"
-    KCODEMAT(144,3) = "m/s"
-
-    KCODEMAT(145,1) = "Boundary Layer Dissipation"
-    KCODEMAT(145,2) = "bld"
-    KCODEMAT(145,3) = "W/m2"
-
-    KCODEMAT(146,1) = "Surface Sensible Heat Flux"
-    KCODEMAT(146,2) = "hfss"
-    KCODEMAT(146,3) = "W/m2"
-
-    KCODEMAT(147,1) = "Surface Latent Heat Flux"
-    KCODEMAT(147,2) = "hfls"
-    KCODEMAT(147,3) = "W/m2"
-
-    KCODEMAT(148,1) = "Streamfunction"
-    KCODEMAT(148,2) = "stf"
-    KCODEMAT(148,3) = "m2/s"
-
-    KCODEMAT(149,1) = "Velocity Potential"
-    KCODEMAT(149,2) = "psi"
-    KCODEMAT(149,3) = "m2/s"
-
-    KCODEMAT(151,1) = "Mean Sea Level Pressure"
-    KCODEMAT(151,2) = "psl"
-    KCODEMAT(151,3) = "hPa"
-
-    KCODEMAT(152,1) = "Log Surface Pressure"
-    KCODEMAT(152,2) = "pl"
-    KCODEMAT(152,3) = "1"
-
-    KCODEMAT(155,1) = "Divergence"
-    KCODEMAT(155,2) = "d"
-    KCODEMAT(155,3) = "1/s"
-
-    KCODEMAT(156,1) = "Geopotential Height"
-    KCODEMAT(156,2) = "zg"
-    KCODEMAT(156,3) = "gpm"
-
-    KCODEMAT(157,1) = "Relative Humidity"
-    KCODEMAT(157,2) = "hur"
-    KCODEMAT(157,3) = "%"
-
-    KCODEMAT(158,1) = "Tendency of Surface Pressure"
-    KCODEMAT(158,2) = "tps"
-    KCODEMAT(158,3) = "Pa/s"
-
-    KCODEMAT(159,1) = "ustar**3"
-    KCODEMAT(159,2) = "u3"
-    KCODEMAT(159,3) = "m3/s3"
-
-    KCODEMAT(160,1) = "Surface Runoff"
-    KCODEMAT(160,2) = "mrro"
-    KCODEMAT(160,3) = "m/s"
-
-    KCODEMAT(161,1) = "Liquid Water Content"
-    KCODEMAT(161,2) = "clw"
-    KCODEMAT(161,3) = "kg/kg"
-
-    KCODEMAT(162,1) = "Cloud Cover"
-    KCODEMAT(162,2) = "cl"
-    KCODEMAT(162,3) = "1"
-
-    KCODEMAT(163,1) = "Total Cloud Cover"
-    KCODEMAT(163,2) = "tcc"
-    KCODEMAT(163,3) = "1"
-
-    KCODEMAT(164,1) = "Total Cloud Cover (Mean)"
-    KCODEMAT(164,2) = "clt"
-    KCODEMAT(164,3) = "1"
-
-    KCODEMAT(165,1) = "Eastward Wind 10m"
-    KCODEMAT(165,2) = "uas"
-    KCODEMAT(165,3) = "m/s"
-
-    KCODEMAT(166,1) = "Northward Wind 10m"
-    KCODEMAT(166,2) = "vas"
-    KCODEMAT(166,3) = "m/s"
-
-    KCODEMAT(167,1) = "2m Temperature"
-    KCODEMAT(167,2) = "tas"
-    KCODEMAT(167,3) = "K"
-
-    KCODEMAT(168,1) = "2m Dew Point Temperature"
-    KCODEMAT(168,2) = "td2m"
-    KCODEMAT(168,3) = "K"
-
-    KCODEMAT(169,1) = "Surface Temperature Accumulated"
-    KCODEMAT(169,2) = "tsa"
-    KCODEMAT(169,3) = "K"
-
-    KCODEMAT(170,1) = "Deep Soil Temperature"
-    KCODEMAT(170,2) = "tsod"
-    KCODEMAT(170,3) = "K"
-
-    KCODEMAT(171,1) = "Deep Soil Wetness"
-    KCODEMAT(171,2) = "dsw"
-    KCODEMAT(171,3) = "1"
-
-    KCODEMAT(172,1) = "Land Sea Mask"
-    KCODEMAT(172,2) = "lsm"
-    KCODEMAT(172,3) = "1"
-
-    KCODEMAT(173,1) = "Surface Roughness"
-    KCODEMAT(173,2) = "z0"
-    KCODEMAT(173,3) = "m"
-
-    KCODEMAT(174,1) = "Surface Albedo"
-    KCODEMAT(174,2) = "alb"
-    KCODEMAT(174,3) = "1"
-
-    KCODEMAT(176,1) = "Surface Solar Radiation"
-    KCODEMAT(176,2) = "ssr"
-    KCODEMAT(176,3) = "W/m2"
-
-    KCODEMAT(177,1) = "Surface Thermal Radiation"
-    KCODEMAT(177,2) = "rss"
-    KCODEMAT(177,3) = "W/m2"
-
-    KCODEMAT(178,1) = "Top Solar Radiation"
-    KCODEMAT(178,2) = "rst"
-    KCODEMAT(178,3) = "W/m2"
-
-    KCODEMAT(179,1) = "Top Thermal Radiation"
-    KCODEMAT(179,2) = "rlut"
-    KCODEMAT(179,3) = "W/m2"
-
-    KCODEMAT(180,1) = "U-Stress"
-    KCODEMAT(180,2) = "tauu"
-    KCODEMAT(180,3) = "Pa"
-
-    KCODEMAT(181,1) = "V-Stress"
-    KCODEMAT(181,2) = "tauv"
-    KCODEMAT(181,3) = "Pa"
-
-    KCODEMAT(182,1) = "Evaporation"
-    KCODEMAT(182,2) = "evap"
-    KCODEMAT(182,3) = "m/s"
-
-    KCODEMAT(183,1) = "Soil Temperature"
-    KCODEMAT(183,2) = "tso"
-    KCODEMAT(183,3) = "K"
-
-    KCODEMAT(184,1) = "Soil Wetness"
-    KCODEMAT(184,2) = "wsoi"
-    KCODEMAT(184,3) = "1"
-
-    KCODEMAT(199,1) = "Vegetation Cover"
-    KCODEMAT(199,2) = "vegc"
-    KCODEMAT(199,3) = "1"
-
-    KCODEMAT(200,1) = "Leaf Area Index"
-    KCODEMAT(200,2) = "dlai"
-    KCODEMAT(200,3) = "1"
-
-    KCODEMAT(203,1) = "Tp Solar Radiation Upward"
-    KCODEMAT(203,2) = "rsdt"
-    KCODEMAT(203,3) = "W/m2"
-
-    KCODEMAT(204,1) = "Surface Solar Radiation Upward"
-    KCODEMAT(204,2) = "ssru"
-    KCODEMAT(204,3) = "W/m2"
-
-    KCODEMAT(205,1) = "Surface Thermal Radiation Upward"
-    KCODEMAT(205,2) = "stru"
-    KCODEMAT(205,3) = "W/m2"
-
-    KCODEMAT(207,1) = "Soil Temperature Level 2"
-    KCODEMAT(207,2) = "tso2"
-    KCODEMAT(207,3) = "K"
-
-    KCODEMAT(208,1) = "Soil Temperature Level 3"
-    KCODEMAT(208,2) = "tso3"
-    KCODEMAT(208,3) = "K"
-
-    KCODEMAT(209,1) = "Soil Temperature Level 4"
-    KCODEMAT(209,2) = "tso4"
-    KCODEMAT(209,3) = "K"
-
-    KCODEMAT(210,1) = "Sea Ice Cover"
-    KCODEMAT(210,2) = "sic"
-    KCODEMAT(210,3) = "1"
-
-    KCODEMAT(211,1) = "Sea Ice Thickness"
-    KCODEMAT(211,2) = "sit"
-    KCODEMAT(211,3) = "m"
-
-    KCODEMAT(212,1) = "Forest Cover"
-    KCODEMAT(212,2) = "vegf"
-    KCODEMAT(212,3) = "1"
-
-    KCODEMAT(218,1) = "Snow Melt"
-    KCODEMAT(218,2) = "snm"
-    KCODEMAT(218,3) = "m/s"
-
-    KCODEMAT(221,1) = "Snow Depth Change"
-    KCODEMAT(221,2) = "sndc"
-    KCODEMAT(221,3) = "m/s"
-
-    KCODEMAT(229,1) = "Max. Soil Water H. Capacity"
-    KCODEMAT(229,2) = "mrfc"
-    KCODEMAT(229,3) = "m"
-    
-    KCODEMAT(230,1) = "Vert. Integrated Spec. Hum."
-    KCODEMAT(230,2) = "prw"
-    KCODEMAT(230,3) = "kg/m2"
-
-    KCODEMAT(232,1) = "Glacier Cover"
-    KCODEMAT(232,2) = "glac"
-    KCODEMAT(232,3) = "1"
-
-    KCODEMAT(238,1) = "Snow Temperature"
-    KCODEMAT(238,2) = "tsn"
-    KCODEMAT(238,3) = "K"
-
-    KCODEMAT(259,1) = "Wind Speed"
-    KCODEMAT(259,2) = "spd"
-    KCODEMAT(259,3) = "m/s"
-
-    KCODEMAT(260,1) = "Total Precipitation"
-    KCODEMAT(260,2) = "pr"
-    KCODEMAT(260,3) = "m/s"
-
-    KCODEMAT(261,1) = "Net Top Radiation"
-    KCODEMAT(261,2) = "ntr"
-    KCODEMAT(261,3) = "W/m2"
-
-    KCODEMAT(262,1) = "Net Bottom Radiation"
-    KCODEMAT(262,2) = "nbr"
-    KCODEMAT(262,3) = "W/m2"
-
-    KCODEMAT(263,1) = "Net Heat Flux"
-    KCODEMAT(263,2) = "hfns"
-    KCODEMAT(263,3) = "W/m2"
-
-    KCODEMAT(264,1) = "Net Water Flux"
-    KCODEMAT(264,2) = "wfn"
-    KCODEMAT(264,3) = "m/s"
-
-    KCODEMAT(273,1) = "d(ps)/dx"
-    KCODEMAT(273,2) = "dpdx"
-    KCODEMAT(273,3) = "Pa m-1"
-
-    KCODEMAT(274,1) = "d(ps)/dy"
-    KCODEMAT(274,2) = "dpdy"
-    KCODEMAT(274,3) = "Pa m-1"
-
-    KCODEMAT(277,1) = "Half Level Pressure"
-    KCODEMAT(277,2) = "hlpr"
-    KCODEMAT(277,3) = "Pa"
-
-    KCODEMAT(278,1) = "Full Level Pressure"
-    KCODEMAT(278,2) = "flpr"
-    KCODEMAT(278,3) = "Pa"
-
-    KCODEMAT(300,1) = "Gross Primary Production"
-    KCODEMAT(300,2) = "agpp"
-    KCODEMAT(300,3) = "kgC m-2 s-1"
-
-    KCODEMAT(301,1) = "Net Primary Production"
-    KCODEMAT(301,2) = "anpp"
-    KCODEMAT(301,3) = "kgC m-2 s-1"
-
-    KCODEMAT(302,1) = "Light Limited GPP"
-    KCODEMAT(302,2) = "agppl"
-    KCODEMAT(302,3) = "kgC m-2 s-1"
-
-    KCODEMAT(303,1) = "Water Limited GPP"
-    KCODEMAT(303,2) = "agppw"
-    KCODEMAT(303,3) = "kgC m-2 s-1"
-
-    KCODEMAT(304,1) = "Vegetation Carbon"
-    KCODEMAT(304,2) = "dcveg"
-    KCODEMAT(304,3) = "kgC m-2"
-
-    KCODEMAT(305,1) = "Soil Carbon"
-    KCODEMAT(305,2) = "dcsoil"
-    KCODEMAT(305,3) = "kgC m-2 s-1"
-
-    KCODEMAT(306,1) = "No Growth Allocation"
-    KCODEMAT(306,2) = "anogrow"
-    KCODEMAT(306,3) = "kgC m-2 s-1"
-
-    KCODEMAT(307,1) = "Heterotrophic Respiration"
-    KCODEMAT(307,2) = "aresh"
-    KCODEMAT(307,3) = "kgC m-2 s-1"
-
-    KCODEMAT(308,1) = "Litter Production"
-    KCODEMAT(308,2) = "alitter"
-    KCODEMAT(308,3) = "kgC m-2 s-1"
-
-    KCODEMAT(1730,1) = "Roughness Length Topography"
-    KCODEMAT(1730,2) = "z0t"
-    KCODEMAT(1730,3) = "m"
-
-    KCODEMAT(1731,1) = "Roughness Length Vegetation"
-    KCODEMAT(1731,2) = "z0v"
-    KCODEMAT(1731,3) = "m"
-
-    KCODEMAT(1740,1) = "Albedo Bare Soil"
-    KCODEMAT(1740,2) = "albs"
-    KCODEMAT(1740,3) = "1"
-
-    KCODEMAT(1741,1) = "Albedo Vegetation"
-    KCODEMAT(1741,2) = "albv"
-    KCODEMAT(1741,3) = "1"
-
-    RETURN
-    
-  END SUBROUTINE kcodematrix
+  SUBROUTINE kcoder(kcode,lname,sname,units)
+
+    ! Global namespace
+    INTEGER(KIND=4),  INTENT(IN)  :: kcode
+    CHARACTER(LEN=*), INTENT(OUT) :: lname
+    CHARACTER(LEN=*), INTENT(OUT) :: sname
+    CHARACTER(LEN=*), INTENT(OUT) :: units
+
+    IF (kcode == 110) THEN
+       lname = "Mixed Layer Depth"
+       sname = "mld"
+       units = "m"
+    ELSE IF (kcode == 129) THEN
+       lname = "Surface Geopotential Orography"
+       sname = "sg"
+       units = "m2/s2"
+    ELSE IF (kcode == 130) THEN
+       lname = "Temperature"
+       sname = "ta"
+       units = "K"
+    ELSE IF (kcode == 131) THEN
+       lname = "Zonal Wind"
+       sname = "ua"
+       units = "m/s"
+    ELSE IF (kcode == 132) THEN
+       lname = "Meridional Wind"
+       sname = "va"
+       units = "m/s"
+    ELSE IF (kcode == 133) THEN
+       lname = "Specific Humidity"
+       sname = "hus"
+       units = "kg/kg"
+    ELSE IF (kcode == 134) THEN
+       lname = "Surface Pressure"
+       sname = "ps"
+       units = "hPa"
+    ELSE IF (kcode == 135) THEN
+       lname = "Vertical Velocity"
+       sname = "wap"
+       units = "Pa/s"
+    ELSE IF (kcode == 137) THEN
+       lname = "Vertical Wind"
+       sname = "wa"
+       units = "m/s"
+    ELSE IF (kcode == 138) THEN
+       lname = "Vorticity"
+       sname = "zeta"
+       units = "1/s"
+    ELSE IF (kcode == 139) THEN
+       lname = "Surface Temperature"
+       sname = "ts"
+       units = "K"
+    ELSE IF (kcode == 140) THEN
+       lname = "Soil Wetness"
+       sname = "mrso"
+       units = "m"
+    ELSE IF (kcode == 141) THEN
+       lname = "Snow Depth"
+       sname = "snd"
+       units = "m"
+    ELSE IF (kcode == 142) THEN
+       lname = "Large Scale Precipitation"
+       sname = "prl"
+       units = "m/s"
+    ELSE IF (kcode == 143) THEN
+       lname = "Convective Precipitation"
+       sname = "prc"
+       units = "m/s"
+    ELSE IF (kcode == 144) THEN
+       lname = "Snow Fall"
+       sname = "prsn"
+       units = "m/s"
+    ELSE IF (kcode == 145) THEN
+       lname = "Boundary Layer Dissipation"
+       sname = "bld"
+       units = "W/m2"
+    ELSE IF (kcode == 146) THEN
+       lname = "Surface Sensible Heat Flux"
+       sname = "hfss"
+       units = "W/m2"
+    ELSE IF (kcode == 147) THEN
+       lname = "Surface Latent Heat Flux"
+       sname = "hfls"
+       units = "W/m2"
+    ELSE IF (kcode == 148) THEN
+       lname = "Streamfunction"
+       sname = "stf"
+       units = "m2/s"
+    ELSE IF (kcode == 149) THEN
+       lname = "Velocity Potential"
+       sname = "psi"
+       units = "m2/s"
+    ELSE IF (kcode == 151) THEN
+       lname = "Mean Sea Level Pressure"
+       sname = "psl"
+       units = "hPa"
+    ELSE IF (kcode == 152) THEN
+       lname = "Log Surface Pressure"
+       sname = "pl"
+       units = "1"
+    ELSE IF (kcode == 155) THEN
+       lname = "Divergence"
+       sname = "d"
+       units = "1/s"
+    ELSE IF (kcode == 156) THEN
+       lname = "Geopotential Height"
+       sname = "zg"
+       units = "gpm"
+    ELSE IF (kcode == 157) THEN
+       lname = "Relative Humidity"
+       sname = "hur"
+       units = "%"
+    ELSE IF (kcode == 158) THEN
+       lname = "Tendency of Surface Pressure"
+       sname = "tps"
+       units = "Pa/s"
+    ELSE IF (kcode == 159) THEN
+       lname = "ustar**3"
+       sname = "u3"
+       units = "m3/s3"
+    ELSE IF (kcode == 160) THEN
+       lname = "Surface Runoff"
+       sname = "mrro"
+       units = "m/s"
+    ELSE IF (kcode == 161) THEN
+       lname = "Liquid Water Content"
+       sname = "clw"
+       units = "kg/kg"
+    ELSE IF (kcode == 162) THEN
+       lname = "Cloud Cover"
+       sname = "cl"
+       units = "1"
+    ELSE IF (kcode == 163) THEN
+       lname = "Total Cloud Cover"
+       sname = "tcc"
+       units = "1"
+    ELSE IF (kcode == 164) THEN
+       lname = "Total Cloud Cover (Mean)"
+       sname = "clt"
+       units = "1"
+    ELSE IF (kcode == 165) THEN
+       lname = "Eastward Wind 10m"
+       sname = "uas"
+       units = "m/s"
+    ELSE IF (kcode == 166) THEN
+       lname = "Northward Wind 10m"
+       sname = "vas"
+       units = "m/s"
+    ELSE IF (kcode == 167) THEN
+       lname = "2m Temperature"
+       sname = "tas"
+       units = "K"
+    ELSE IF (kcode == 168) THEN
+       lname = "2m Dew Point Temperature"
+       sname = "td2m"
+       units = "K"
+    ELSE IF (kcode == 169) THEN
+       lname = "Surface Temperature Accumulated"
+       sname = "tsa"
+       units = "K"
+    ELSE IF (kcode == 170) THEN
+       lname = "Deep Soil Temperature"
+       sname = "tsod"
+       units = "K"
+    ELSE IF (kcode == 171) THEN
+       lname = "Deep Soil Wetness"
+       sname = "dsw"
+       units = "1"
+    ELSE IF (kcode == 172) THEN
+       lname = "Land Sea Mask"
+       sname = "lsm"
+       units = "1"
+    ELSE IF (kcode == 173) THEN
+       lname = "Surface Roughness"
+       sname = "z0"
+       units = "m"
+    ELSE IF (kcode == 174) THEN
+       lname = "Surface Albedo"
+       sname = "alb"
+       units = "1"
+    ELSE IF (kcode == 176) THEN
+       lname = "Surface Solar Radiation"
+       sname = "ssr"
+       units = "W/m2"
+    ELSE IF (kcode == 177) THEN
+       lname = "Surface Thermal Radiation"
+       sname = "rss"
+       units = "W/m2"
+    ELSE IF (kcode == 178) THEN
+       lname = "Top Solar Radiation"
+       sname = "rst"
+       units = "W/m2"
+    ELSE IF (kcode == 179) THEN
+       lname = "Top Thermal Radiation"
+       sname = "rlut"
+       units = "W/m2"
+    ELSE IF (kcode == 180) THEN
+       lname = "U-Stress"
+       sname = "tauu"
+       units = "Pa"
+    ELSE IF (kcode == 181) THEN
+       lname = "V-Stress"
+       sname = "tauv"
+       units = "Pa"
+    ELSE IF (kcode == 182) THEN
+       lname = "Evaporation"
+       sname = "evap"
+       units = "m/s"
+    ELSE IF (kcode == 183) THEN
+       lname = "Soil Temperature"
+       sname = "tso"
+       units = "K"
+    ELSE IF (kcode == 184) THEN
+       lname = "Soil Wetness"
+       sname = "wsoi"
+       units = "1"
+    ELSE IF (kcode == 199) THEN
+       lname = "Vegetation Cover"
+       sname = "vegc"
+       units = "1"
+    ELSE IF (kcode == 200) THEN
+       lname = "Leaf Area Index"
+       sname = "dlai"
+       units = "1"
+    ELSE IF (kcode == 203) THEN
+       lname = "Tp Solar Radiation Upward"
+       sname = "rsdt"
+       units = "W/m2"
+    ELSE IF (kcode == 204) THEN
+       lname = "Surface Solar Radiation Upward"
+       sname = "ssru"
+       units = "W/m2"
+    ELSE IF (kcode == 205) THEN
+       lname = "Surface Thermal Radiation Upward"
+       sname = "stru"
+       units = "W/m2"
+    ELSE IF (kcode == 207) THEN
+       lname = "Soil Temperature Level 2"
+       sname = "tso2"
+       units = "K"
+    ELSE IF (kcode == 208) THEN
+       lname = "Soil Temperature Level 3"
+       sname = "tso3"
+       units = "K"
+    ELSE IF (kcode == 209) THEN
+       lname = "Soil Temperature Level 4"
+       sname = "tso4"
+       units = "K"
+    ELSE IF (kcode == 210) THEN
+       lname = "Sea Ice Cover"
+       sname = "sic"
+       units = "1"
+    ELSE IF (kcode == 211) THEN
+       lname = "Sea Ice Thickness"
+       sname = "sit"
+       units = "m"
+    ELSE IF (kcode == 212) THEN
+       lname = "Forest Cover"
+       sname = "vegf"
+       units = "1"
+    ELSE IF (kcode == 218) THEN
+       lname = "Snow Melt"
+       sname = "snm"
+       units = "m/s"
+    ELSE IF (kcode == 221) THEN
+       lname = "Snow Depth Change"
+       sname = "sndc"
+       units = "m/s"
+    ELSE IF (kcode == 229) THEN
+       lname = "Max. Soil Water H. Capacity"
+       sname = "mrfc"
+       units = "m"
+    ELSE IF (kcode == 230) THEN    
+       lname = "Vert. Integrated Spec. Hum."
+       sname = "prw"
+       units = "kg/m2"
+    ELSE IF (kcode == 232) THEN
+       lname = "Glacier Cover"
+       sname = "glac"
+       units = "1"
+    ELSE IF (kcode == 238) THEN
+       lname = "Snow Temperature"
+       sname = "tsn"
+       units = "K"
+    ELSE IF (kcode == 259) THEN
+       lname = "Wind Speed"
+       sname = "spd"
+       units = "m/s"
+    ELSE IF (kcode == 260) THEN
+       lname = "Total Precipitation"
+       sname = "pr"
+       units = "m/s"
+    ELSE IF (kcode == 261) THEN
+       lname = "Net Top Radiation"
+       sname = "ntr"
+       units = "W/m2"
+    ELSE IF (kcode == 262) THEN
+       lname = "Net Bottom Radiation"
+       sname = "nbr"
+       units = "W/m2"
+    ELSE IF (kcode == 263) THEN
+       lname = "Net Heat Flux"
+       sname = "hfns"
+       units = "W/m2"
+    ELSE IF (kcode == 264) THEN
+       lname = "Net Water Flux"
+       sname = "wfn"
+       units = "m/s"
+    ELSE IF (kcode == 273) THEN
+       lname = "d(ps)/dx"
+       sname = "dpdx"
+       units = "Pa m-1"
+    ELSE IF (kcode == 274) THEN
+       lname = "d(ps)/dy"
+       sname = "dpdy"
+       units = "Pa m-1"
+    ELSE IF (kcode == 277) THEN
+       lname = "Half Level Pressure"
+       sname = "hlpr"
+       units = "Pa"
+    ELSE IF (kcode == 278) THEN
+       lname = "Full Level Pressure"
+       sname = "flpr"
+       units = "Pa"
+    ELSE IF (kcode == 300) THEN
+       lname = "Gross Primary Production"
+       sname = "agpp"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 301) THEN
+       lname = "Net Primary Production"
+       sname = "anpp"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 302) THEN
+       lname = "Light Limited GPP"
+       sname = "agppl"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 303) THEN
+       lname = "Water Limited GPP"
+       sname = "agppw"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 304) THEN
+       lname = "Vegetation Carbon"
+       sname = "dcveg"
+       units = "kgC m-2"
+    ELSE IF (kcode == 305) THEN
+       lname = "Soil Carbon"
+       sname = "dcsoil"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 306) THEN
+       lname = "No Growth Allocation"
+       sname = "anogrow"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 307) THEN
+       lname = "Heterotrophic Respiration"
+       sname = "aresh"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 308) THEN
+       lname = "Litter Production"
+       sname = "alitter"
+       units = "kgC m-2 s-1"
+    ELSE IF (kcode == 1730) THEN
+       lname = "Roughness Length Topography"
+       sname = "z0t"
+       units = "m"
+    ELSE IF (kcode == 1731) THEN
+       lname = "Roughness Length Vegetation"
+       sname = "z0v"
+       units = "m"
+    ELSE IF (kcode == 1740) THEN
+       lname = "Albedo Bare Soil"
+       sname = "albs"
+       units = "1"
+    ELSE IF (kcode == 1741) THEN
+       lname = "Albedo Vegetation"
+       sname = "albv"
+       units = "1"
+    END IF
+
+    RETURN  
+  END SUBROUTINE kcoder
 
   SUBROUTINE latlons(nlat,nlon,lat,lon)
     

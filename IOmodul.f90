@@ -6,7 +6,7 @@ MODULE IOmod
   !
   !  USES:
   !            netcdf -> netCDF-Fortran lib
-  !            CODEmat -> matrix with shortnames and kcodes.
+  !            CODEmat -> uses kcodes to choose attributes
   !
   !  CONTAINS: 
   !            sraReader -> reads .SRA files
@@ -14,7 +14,7 @@ MODULE IOmod
   !            ncgen     -> creates netCDF files
   !
   !  Created: Mateo Duque Villegas
-  !  Last updated: 16-Nov-2017
+  !  Last updated: 17-Nov-2017
   !
   !-------------------------------------------------------------------
   IMPLICIT NONE
@@ -105,7 +105,6 @@ CONTAINS
     REAL(KIND=8),    DIMENSION(nlon,nlat,nmon), INTENT(IN) :: data
 
     ! Local namespace
-    CHARACTER(LEN=100), DIMENSION(100:1800,3) :: kcodemat    
     CHARACTER(LEN=50) :: lname
     CHARACTER(LEN=50) :: timestr
     CHARACTER(LEN=15) :: units
@@ -159,10 +158,7 @@ CONTAINS
     dimids = (/ x_dimid, y_dimid, t_dimid /)
 
     ! Get stuff for variable attributes
-    CALL kcodematrix(kcodemat)
-    lname = kcodemat(kcode,1)
-    sname = kcodemat(kcode,2)
-    units = kcodemat(kcode,3)
+    CALL kcoder(kcode,lname,sname,units)
     
     ! Define variable
     CALL check(nf90_def_var(ncid, sname, NF90_DOUBLE, dimids&
