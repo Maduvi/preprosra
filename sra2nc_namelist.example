@@ -1,0 +1,10 @@
+&INPUT_INFO
+  ROOT   = "/home/mateo/Documents/PlaSim/Build/PLASIM-master/plasim/dat/T42"
+  SRA    = "N064_surf_0173.sra"
+  KCODE  = 173
+  NLAT   = 64
+  NLON   = 128
+  HCOLS  = 8
+  DCOLS  = 4
+  NMON   = 1
+/
