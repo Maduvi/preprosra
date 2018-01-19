@@ -69,7 +69,14 @@ PROGRAM sra2nc
   END IF
   
   ! Get lats and lons (fixed, not computed)
-  CALL latlons(nlat,nlon,lat,lon)
+  IF (nlat == 32) THEN
+     CALL latlons32(nlat,nlon,lat,lon)
+  ELSE IF (nlat == 64) THEN
+     CALL latlons64(nlat,nlon,lat,lon)
+  ELSE
+     WRITE(*,'(A)') "sra2nc: unsopported latitude/longitude."
+     STOP
+  END IF
   
   ! .SRA file name plus .NC extension.
   ncfile = "./"//TRIM(ADJUSTL(sra))//".nc"
