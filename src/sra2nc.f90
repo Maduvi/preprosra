@@ -48,13 +48,14 @@ PROGRAM sra2nc
   OPEN (unit=1, file=TRIM(inpnml),status='old',iostat=operr)
   IF(operr>0) THEN
      WRITE(*,'(A)') "sra2nc: error: could not open namelist file."
-     CALL exit(0)
+     CALL EXIT(0)
   END iF
   
   READ (1,nml=INPUT_INFO,iostat=rderr)
   ! Read namelist file and check for error
   IF(rderr>0) THEN
      WRITE(*,'(A)') "sra2nc: error: could not read namelist file."
+     CALL EXIT(0)
   END IF
   
   ! Allocate memory

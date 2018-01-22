@@ -47,7 +47,7 @@ PROGRAM nc2sra
   OPEN (unit=1, file=TRIM(inpnml),status='old',iostat=operr)
   IF(operr>0) THEN
      WRITE(*,'(A)') "nc2sra: error: could not open namelist file."
-     CALL exit(0)
+     CALL EXIT(0)
   END iF
 
   READ (1,nml=INPUT_INFO,iostat=rderr)
