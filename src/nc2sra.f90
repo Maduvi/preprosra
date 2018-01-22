@@ -40,6 +40,7 @@ PROGRAM nc2sra
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:,:)   :: ihead ! headrs arr
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:)     :: vtime ! times arr
   REAL(KIND=8),    ALLOCATABLE, DIMENSION(:,:,:) :: data  ! data rr
+  REAL(KIND=8),    ALLOCATABLE, DIMENSION(:,:,:) :: psac  ! Plasim ACyc
   REAL(KIND=8),    ALLOCATABLE, DIMENSION(:)     :: lat   ! lats arr
   REAL(KIND=8),    ALLOCATABLE, DIMENSION(:)     :: lon   ! longs arr
   
@@ -83,21 +84,51 @@ PROGRAM nc2sra
 
   ! Allocate memory
   ALLOCATE(lat(nlat))
-  ALLOCATE(lon(nlon))  
-  ALLOCATE(ihead(hcols,nmon))
+  ALLOCATE(lon(nlon))
   ALLOCATE(data(nlon,nlat,nmon))
   ALLOCATE(vtime(nmon))
 
   ! Read netCDF variables
   CALL ncread(ncfile,ndims,nvars,nmon,nlon,nlat,vtime,lon,lat,data)  
-  
-  ! Generate .SRA headers
-  CALL genheadr(kcode,hcols,nmon,nlon,nlat,ihead)
 
   ! .NC file name plus .sra extension.
   srafile = "./"//TRIM(ADJUSTL(nc))//".sra"
 
-  ! Create SRA file using headers and dcols
-  CALL  sragen(srafile,kcode,hcols,dcols,nmon,nlon,nlat,ihead,data)  
+  IF(nmon == 1 .OR. nmon == 14) THEN
+     
+     ALLOCATE(ihead(hcols,nmon))
+     
+     ! Generate .SRA headers
+     CALL genheadr(kcode,hcols,nmon,nlon,nlat,ihead)
 
+     ! Create SRA file using headers and dcols depending on whether 
+     CALL sragen(srafile,kcode,hcols,dcols,nmon,nlon,nlat,ihead,data)
+  ELSE IF(nmon == 12) THEN
+
+     ALLOCATE(psac(nlon,nlat,14))
+     ALLOCATE(ihead(hcols,14))
+
+     ! Create array with 14 months
+     psac(:,:,1) = data(:,:,12)
+     psac(:,:,2:13) = data(:,:,:)
+     psac(:,:,14) = data(:,:,1)
+     
+     ! Generate .SRA headers
+     CALL genheadr(kcode,hcols,14,nlon,nlat,ihead)
+
+     ! Create SRA file using headers and dcols depending on whether 
+     CALL sragen(srafile,kcode,hcols,dcols,14,nlon,nlat,ihead,psac)
+  ELSE
+     WRITE(*,'(A)') "nc2sra: error: incorrect number of timesteps in nc."
+     CALL EXIT(0)
+  END IF
+  
+  ! Free memory
+  DEALLOCATE(lon)
+  DEALLOCATE(lat)
+  DEALLOCATE(vtime)
+  DEALLOCATE(data)
+  DEALLOCATE(psac)
+  DEALLOCATE(ihead)
+  
 END PROGRAM nc2sra

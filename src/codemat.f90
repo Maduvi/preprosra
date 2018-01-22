@@ -5,9 +5,9 @@ MODULE CODEmat
   !  shortnames, longnames and units for common PlaSim variables.
   !  
   !  CONTAINS:
-  !           kcoder -> chooses lname,sname,units from kcode
-  !           genhdr -> creates headers for SRA files
-  !           latlons -> gives lat and lot arrays got elsewhere
+  !           kcoder   -> chooses lname,sname,units from kcode
+  !           genheadr -> creates headers for SRA files
+  !           latlons  -> gives lat and lot arrays got elsewhere
   !
   !  Created: Mateo Duque Villegas
   !  Last updated: 17-Nov-2017
@@ -411,7 +411,7 @@ CONTAINS
     INTEGER(KIND=4), INTENT(IN)  :: nlat
     INTEGER(KIND=4), INTENT(IN)  :: nlon
     INTEGER(KIND=4), DIMENSION(hcols,nmon), INTENT(OUT) :: ihead
-
+    
     ! Local namespace
     INTEGER(KIND=4) :: i
     INTEGER(KIND=4) :: ilevel = 0
@@ -419,7 +419,7 @@ CONTAINS
     INTEGER(KIND=4) :: itime
     INTEGER(KIND=4) :: idispo1 = 0
     INTEGER(KIND=4) :: idispo2 = 0
-
+        
     IF (kcode == 129) THEN
        idate = 20070101
        itime = 0
@@ -468,7 +468,7 @@ CONTAINS
     END IF
     
     ! Fill header array
-    DO i=0,nmon
+    DO i=1,nmon
        ihead(1,i) = kcode
        ihead(2,i) = ilevel
        ! These dates need a bit of pampering
@@ -487,7 +487,7 @@ CONTAINS
        ihead(7,i) = idispo1
        ihead(8,i) = idispo2
     END DO
-   
+    
     RETURN
   END SUBROUTINE genheadr
   
