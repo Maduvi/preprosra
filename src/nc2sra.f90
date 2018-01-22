@@ -40,12 +40,21 @@ PROGRAM nc2sra
   
   NAMELIST /INPUT_INFO/ root, nc, kcode, hcols, dcols
 
-  ! Read input file with variable definitions
-  inpnml  = "./nc2sra_namelist"
-  OPEN (unit=1, file=inpnml,iostat=operr)
-  IF(operr>0) STOP "sra2nc: IOError. Could not open namelist file."  
+  ! Read namelist file name with input variables from command line
+  CALL GET_COMMAND_ARGUMENT(1, inpnml)
+
+  ! Open namelist file to get variables and check for error
+  OPEN (unit=1, file=TRIM(inpnml),status='old',iostat=operr)
+  IF(operr>0) THEN
+     WRITE(*,'(A)') "nc2sra: error: could not open namelist file."
+     CALL exit(0)
+  END iF
+
   READ (1,nml=INPUT_INFO,iostat=rderr)
-  IF(rderr>0) STOP "sra2nc: IOError. Could not read namelist file."
+  ! Read namelist file and check for error
+  IF(rderr>0) THEN
+     WRITE(*,'(A)') "nc2sra: error: could not read namelist file."
+  END IF
 
   ! .NC whole file name.
   ncfile = TRIM(ADJUSTL(root))//"/"//TRIM(ADJUSTL(nc))

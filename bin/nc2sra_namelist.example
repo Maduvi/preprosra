@@ -1,5 +1,5 @@
 &INPUT_INFO
-  ROOT   = "/home/mateo/Documents/PlaSim/Prepro/Dat2NC"
+  ROOT   = "/home/mateo/Documents/Masters/Thesis/plasim/build/PLASIM/plasim/dat/T42"
   NC     = "N064_surf_0172.sra.nc"
   KCODE  = 172
   HCOLS  = 8

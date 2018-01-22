@@ -41,12 +41,21 @@ PROGRAM sra2nc
   NAMELIST /INPUT_INFO/ root, sra, kcode, nlat, nlon, hcols, dcols,&
        & nmon 
 
-  ! Read input file with variable definitions
-  inpnml  = "./sra2nc_namelist"
-  OPEN (unit=1, file=inpnml,iostat=operr)
-  IF(operr>0) STOP "sra2nc: IOError. Could not open namelist file."  
+  ! Read namelist file name with input variables from command line
+  CALL GET_COMMAND_ARGUMENT(1, inpnml)
+
+  ! Open namelist file to get variables and check for error
+  OPEN (unit=1, file=TRIM(inpnml),status='old',iostat=operr)
+  IF(operr>0) THEN
+     WRITE(*,'(A)') "sra2nc: error: could not open namelist file."
+     CALL exit(0)
+  END iF
+  
   READ (1,nml=INPUT_INFO,iostat=rderr)
-  IF(rderr>0) STOP "sra2nc: IOError. Could not read namelist file."
+  ! Read namelist file and check for error
+  IF(rderr>0) THEN
+     WRITE(*,'(A)') "sra2nc: error: could not read namelist file."
+  END IF
   
   ! Allocate memory
   ALLOCATE(lat(nlat))
@@ -74,8 +83,8 @@ PROGRAM sra2nc
   ELSE IF (nlat == 64) THEN
      CALL latlons64(nlat,nlon,lat,lon)
   ELSE
-     WRITE(*,'(A)') "sra2nc: unsopported latitude/longitude."
-     STOP
+     WRITE(*,'(A)') "sra2nc: error: unsopported latitude/longitude."
+     CALL exit(0)
   END IF
   
   ! .SRA file name plus .NC extension.

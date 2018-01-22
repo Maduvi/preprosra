@@ -23,4 +23,4 @@ clean-all: clean
 	rm -f bin/*.exe
 
 clean:
-	rm -f *.o *.mod 
+	rm -f *.o *.mod *.mod0

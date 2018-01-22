@@ -48,22 +48,33 @@ CONTAINS
     ! Open .SRA file and check for problems.
     OPEN(unit,file=srafile,form='FORMATTED',status='old',action='read'&
          &,iostat=operr)
-    IF(operr>0) STOP "sraReader: IOError. Could not open the file."
+    IF(operr>0) THEN
+       WRITE(*,'(A)') "sraReader: error: could not open .sra file."
+       CALL EXIT(0)
+    END IF
 
     DO i = 1,nmon
        ! Read header info and check for problems.
        READ(unit,'(8I10)',iostat=rderr) ihead(:,i)
-       IF(rderr>0) STOP "sraReader: IOError. Could not read the file."
-
+       IF(rderr>0) THEN
+          WRITE(*,'(A)') "sraReader: error: could not read .sra file."
+          CALL EXIT(0)
+       END IF
        ! Because formatting is different in some .SRA files
        IF (dcols == 4) THEN
           READ(unit,'(4E16.6)',iostat=rderr) data(:,:,i)
-          IF(rderr>0) STOP "sraReader: IOError. Wrong reading format."
+          IF(rderr>0) THEN
+             WRITE(*,'(A)') "sraReader: error: wrong reading format."
+             CALL EXIT(0)
+          END IF
        ELSE IF (dcols == 8) THEN
           READ(unit,'(8F10.8)',iostat=rderr) data(:,:,i)
-          IF(rderr>0) STOP "sraReader: IOError. Wrong reading format."
+          IF(rderr>0) THEN
+             WRITE(*,'(A)') "sraReader: error: wrong reading format."
+             CALL EXIT(0)
+          END IF      
        ELSE
-          WRITE(*,'(A)') "IOmodul: unknown reading format."
+          WRITE(*,'(A)') "IOmodul: error: unknown reading format."
           CALL EXIT(0)
        END IF
     END DO
@@ -304,8 +315,11 @@ CONTAINS
     ! Open .SRA file
     OPEN(unit,file=srafile,form='FORMATTED',action='write',iostat&
          &=operr)
-    IF(operr>0) STOP "sragen: IOError. Could not open the file."
-
+    IF(operr>0) THEN
+       WRITE(*,'(A)') "sragen: error: could not create .sra file."
+       CALL EXIT(0)
+    END IF
+    
     ! Write for every month
     DO i = 1,nmon
        WRITE(unit,'(8I10)') ihead(:,i)
