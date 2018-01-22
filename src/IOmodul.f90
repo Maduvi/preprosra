@@ -95,44 +95,47 @@ CONTAINS
     ! Check for errors everytime run netcdf library stuff
     IF (istatus /= nf90_noerr) THEN   
        WRITE(*,*) TRIM(ADJUSTL(nf90_strerror(istatus)))
+       CALL EXIT(0)
     END IF
 
     RETURN
   END SUBROUTINE check
 
-  SUBROUTINE getdims(ncfile,nmon,nlon,nlat)
+  SUBROUTINE getdims(ncfile,ndims,nvars,namearr,dimarr)
 
     USE netcdf
 
     IMPLICIT NONE
 
     ! Global namespace
-    CHARACTER(LEN=*), INTENT(IN)  :: ncfile
-    INTEGER(KIND=4),  INTENT(OUT) :: nmon
-    INTEGER(KIND=4),  INTENT(OUT) :: nlon
-    INTEGER(KIND=4),  INTENT(OUT) :: nlat
+    CHARACTER(LEN=*),  INTENT(IN)  :: ncfile
+    INTEGER(KIND=4),   INTENT(OUT) :: ndims
+    INTEGER(KIND=4),   INTENT(OUT) :: nvars
+    CHARACTER(LEN=50), DIMENSION(3), INTENT(OUT) :: namearr
+    INTEGER(KIND=4),   DIMENSION(3), INTENT(OUT) :: dimarr
 
     ! Local namespace
-    CHARACTER(LEN=50) :: tname
-    CHARACTER(LEN=50) :: xname
-    CHARACTER(LEN=50) :: yname
+    INTEGER(KIND=4)   :: i
     INTEGER(KIND=4)   :: ncid
 
     ! Open netCDF and read
     CALL check(nf90_open(ncfile,nf90_nowrite,ncid))
 
-    ! Inquire for dimensions
-    CALL check(nf90_inquire_dimension(ncid,1,tname,nmon))
-    CALL check(nf90_inquire_dimension(ncid,2,xname,nlon))
-    CALL check(nf90_inquire_dimension(ncid,3,yname,nlat))
+    ! Generic inquire of information
+    CALL check(nf90_inquire(ncid,ndims,nvars))
 
+    ! Inquire for dimensions
+    DO i=1,ndims
+       CALL check(nf90_inquire_dimension(ncid,i,namearr(i),dimarr(i)))
+    END DO
+    
     ! Close netCDF file
     CALL check(nf90_close(ncid))
 
     RETURN
   END SUBROUTINE getdims
   
-  SUBROUTINE ncread(ncfile,nmon,nlon,nlat,vtime,lon,lat,data)
+  SUBROUTINE ncread(ncfile,ndims,nvars,nmon,nlon,nlat,vtime,lon,lat,data)
 
     USE netcdf
 
@@ -140,6 +143,8 @@ CONTAINS
 
     ! Global namespace
     CHARACTER(LEN=*), INTENT(IN) :: ncfile
+    INTEGER(KIND=4),  INTENT(IN) :: ndims
+    INTEGER(KIND=4),  INTENT(IN) :: nvars
     INTEGER(KIND=4),  INTENT(IN) :: nmon
     INTEGER(KIND=4),  INTENT(IN) :: nlon
     INTEGER(KIND=4),  INTENT(IN) :: nlat
@@ -149,38 +154,37 @@ CONTAINS
     REAL(KIND=8),    DIMENSION(nlon,nlat,nmon), INTENT(OUT) :: data
 
     ! Local namespace
-    CHARACTER(LEN=50) :: tname
-    CHARACTER(LEN=50) :: xname
-    CHARACTER(LEN=50) :: yname
-    CHARACTER(LEN=50) :: vname
+    INTEGER(KIND=4)   :: i
     INTEGER(KIND=4)   :: ncid
-    INTEGER(KIND=4)   :: type
-    INTEGER(KIND=4)   :: ndims
-    INTEGER(KIND=4)   :: varid
-    INTEGER(KIND=4), DIMENSION(3) :: dimids
+    CHARACTER(LEN=50), DIMENSION(nvars)       :: vnames
+    INTEGER(KIND=4),   DIMENSION(nvars)       :: dtypes
+    INTEGER(KIND=4),   DIMENSION(nvars,ndims) :: dids
+    INTEGER(KIND=4),   DIMENSION(nvars)       :: vids
+    INTEGER(KIND=4),   DIMENSION(nvars)       :: vndims
 
     ! Open netcdf
     CALL check(nf90_open(ncfile,nf90_nowrite,ncid))
 
-    ! Get values for time coordinate
-    CALL check(nf90_inquire_variable(ncid,1,vname,type,ndims,dimids))
-    CALL check(nf90_inq_varid(ncid,vname,varid))
-    CALL check(nf90_get_var(ncid,varid,vtime))
+    ! Find out the names of variables and their ids and dimensions
+    DO i=1,nvars
+       dids(i,:) = 0 ! Make array 0 to actually see dim ids
+       CALL check(nf90_inquire_variable(ncid,i,vnames(i),dtypes(i)&
+            &,vndims(i),dids(i,:)))
+       CALL check(nf90_inq_varid(ncid,vnames(i),vids(i)))
+    END DO
 
-    ! Get values for x coordinate
-    CALL check(nf90_inquire_variable(ncid,2,vname,type,ndims,dimids))
-    CALL check(nf90_inq_varid(ncid,vname,varid))
-    CALL check(nf90_get_var(ncid,varid,lon))
-
-    ! Get values for y coordinate
-    CALL check(nf90_inquire_variable(ncid,3,vname,type,ndims,dimids))
-    CALL check(nf90_inq_varid(ncid,vname,varid))
-    CALL check(nf90_get_var(ncid,varid,lat))
-    
-    ! Get values for data
-    CALL check(nf90_inquire_variable(ncid,4,vname,type,ndims,dimids))
-    CALL check(nf90_inq_varid(ncid,vname,varid))
-    CALL check(nf90_get_var(ncid,varid,data))
+    ! Now actually fill correct arrays with correct dims and vars
+    DO i=1,nvars
+       IF(vnames(i) == "time") THEN
+          CALL check(nf90_get_var(ncid,vids(i),vtime))
+       ELSE IF(vnames(i) == "lat" .OR. vnames(i) == "latitude") THEN
+          CALL check(nf90_get_var(ncid,vids(i),lat))
+       ELSE IF(vnames(i) == "lon" .OR. vnames(i) == "longitude") THEN
+          CALL check(nf90_get_var(ncid,vids(i),lon))
+       ELSE
+          CALL check(nf90_get_var(ncid,vids(i),data))
+       END IF
+    END DO                          
     
     RETURN
   END SUBROUTINE ncread

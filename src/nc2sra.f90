@@ -23,8 +23,11 @@ PROGRAM nc2sra
   CHARACTER(LEN=100) :: ncfile   ! .NC whole file name
   CHARACTER(LEN=100) :: inpnml   ! Input file name
   CHARACTER(LEN=100) :: srafile  ! Output .SRA file
+  INTEGER(KIND=4)    :: i        ! Loop counter
   INTEGER(KIND=4)    :: kcode    ! ECHAM code
   INTEGER(KIND=4)    :: unit     ! Namelist unit
+  INTEGER(KIND=4)    :: ndims    ! Number of dimensions in netCDF
+  INTEGER(KIND=4)    :: nvars    ! Number of variables in netCDF
   INTEGER(KIND=4)    :: nmon     ! Number of months in file
   INTEGER(KIND=4)    :: nlon     ! Number of longitudes
   INTEGER(KIND=4)    :: nlat     ! Number of latitudes
@@ -32,6 +35,8 @@ PROGRAM nc2sra
   INTEGER(KIND=4)    :: dcols    ! Number of cols in data matrix
   INTEGER(KIND=4)    :: operr    ! Open error variable
   INTEGER(KIND=4)    :: rderr    ! Read error variable
+  CHARACTER(LEN=50), DIMENSION(3) :: namearr  ! Name dimension in netCDF
+  INTEGER(KIND=4),   DIMENSION(3) :: dimarr   ! Dimension in netCDF
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:,:)   :: ihead ! headrs arr
   INTEGER(KIND=4), ALLOCATABLE, DIMENSION(:)     :: vtime ! times arr
   REAL(KIND=8),    ALLOCATABLE, DIMENSION(:,:,:) :: data  ! data rr
@@ -54,13 +59,27 @@ PROGRAM nc2sra
   ! Read namelist file and check for error
   IF(rderr>0) THEN
      WRITE(*,'(A)') "nc2sra: error: could not read namelist file."
+     CALL EXIT(0)
   END IF
 
   ! .NC whole file name.
   ncfile = TRIM(ADJUSTL(root))//"/"//TRIM(ADJUSTL(nc))
   
   ! Get dimensions of netCDF
-  CALL getdims(ncfile,nmon,nlon,nlat)
+  CALL getdims(ncfile,ndims,nvars,namearr,dimarr)
+
+  DO i=1,ndims
+     IF(namearr(i) == "time") THEN
+        nmon = dimarr(i)
+     ELSE IF(namearr(i) == "lon" .OR. namearr(i) == "longitude") THEN
+        nlon = dimarr(i)
+     ELSE IF(namearr(i) == "lat" .OR. namearr(i) == "latitude") THEN
+        nlat = dimarr(i)
+     ELSE
+        WRITE(*,'(A)') "nc2sra: error: unknown dimensions in netCDF."
+        CALL EXIT(0)
+     END IF
+  END DO
 
   ! Allocate memory
   ALLOCATE(lat(nlat))
@@ -70,7 +89,7 @@ PROGRAM nc2sra
   ALLOCATE(vtime(nmon))
 
   ! Read netCDF variables
-  CALL ncread(ncfile,nmon,nlon,nlat,vtime,lon,lat,data)  
+  CALL ncread(ncfile,ndims,nvars,nmon,nlon,nlat,vtime,lon,lat,data)  
   
   ! Generate .SRA headers
   CALL genheadr(kcode,hcols,nmon,nlon,nlat,ihead)
