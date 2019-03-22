@@ -118,6 +118,9 @@ PROGRAM nc2sra
 
      ! Create SRA file using headers and dcols depending on whether 
      CALL sragen(srafile,kcode,hcols,dcols,14,nlon,nlat,ihead,psac)
+
+     DEALLOCATE(psac)
+
   ELSE
      WRITE(*,'(A)') "nc2sra: error: incorrect number of timesteps in nc."
      CALL EXIT(0)
@@ -128,7 +131,6 @@ PROGRAM nc2sra
   DEALLOCATE(lat)
   DEALLOCATE(vtime)
   DEALLOCATE(data)
-  DEALLOCATE(psac)
   DEALLOCATE(ihead)
   
 END PROGRAM nc2sra
