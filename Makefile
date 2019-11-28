@@ -1,7 +1,7 @@
 # This will help you compile everything here.
 FC      = gfortran
-CPPFLAGS = -I/usr/lib64/gfortran/modules
-LDFLAGS  = -L/usr/lib64 -lnetcdff
+CPPFLAGS = -I/usr/include
+LDFLAGS  = -L/usr/lib -lnetcdff
 FFLAGS  = -g
 COMPILE  = $(FC) $(FFLAGS) $(CPPFLAGS) -c
 LINK     = $(FC) $(LDFLAGS) -o
